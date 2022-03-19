@@ -14,5 +14,7 @@ namespace eShop.Data.Entities
         public string Message { get; set; }
         public TransactionStatus Status { get; set; }
         public string Provider { set; get; }
+        public Guid UserId { set; get; }
+        public AppUser AppUser { get; set; }
     }
 }
