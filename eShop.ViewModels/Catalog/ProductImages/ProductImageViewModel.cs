@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace eShop.ViewModels.Catalog.Products
+namespace eShop.ViewModels.Catalog.ProductImages
 {
     public class ProductImageViewModel
     {
+        public int ProductId { get; set; }
         public int Id { get; set; }
         public string ImagePath { get; set; }
         public string Caption { get; set; }

@@ -15,5 +15,9 @@
     <ProjectReference Include="..\eShop.ViewModels\eShop.ViewModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\user-content\" />
+  </ItemGroup>
+
 
 </Project>

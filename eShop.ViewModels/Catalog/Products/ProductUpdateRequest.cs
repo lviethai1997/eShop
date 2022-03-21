@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace eShop.ViewModels.Catalog.Products.Manage
+namespace eShop.ViewModels.Catalog.Products
 {
-    public class ProducUpdateRequest
+    public class ProductUpdateRequest
     {
         public int Id { get; set; }
         public string Name { get; set; }
