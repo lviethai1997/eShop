@@ -7,6 +7,10 @@
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.16.0" />
+	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\eShop.Data\eShop.Data.csproj" />

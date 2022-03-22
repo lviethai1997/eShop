@@ -1,7 +1,9 @@
 ﻿using eShop.Application.Catalog.Products;
 using eShop.ViewModels.Catalog.ProductImages;
 using eShop.ViewModels.Catalog.Products;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace eShop.BackendAPI.Controllers
@@ -63,7 +65,7 @@ namespace eShop.BackendAPI.Controllers
         }
 
         [HttpPut("UpdateProduct")]
-        public async Task<IActionResult> UpdateProduct([FromBody] ProductUpdateRequest productUpdateRequest)
+        public async Task<IActionResult> UpdateProduct([FromForm] ProductUpdateRequest productUpdateRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -95,7 +97,7 @@ namespace eShop.BackendAPI.Controllers
             }
         }
 
-        [HttpDelete("DeleteProduct/{productId}")]
+        [HttpDelete("DeleteProduct/DeleteProduct/{productId}")]
         public async Task<IActionResult> DeleteProduct(int productId)
         {
             var productUpdate = await _imanageProductService.Delete(productId);
@@ -109,7 +111,7 @@ namespace eShop.BackendAPI.Controllers
             }
         }
 
-        [HttpPost("{productId}/images")]
+        [HttpPost("CreateImage/{productId}/images")]
         public async Task<IActionResult> CreateImage(int productId, [FromForm] ProductImagesCreateRequest request)
         {
             if (!ModelState.IsValid)
@@ -128,7 +130,7 @@ namespace eShop.BackendAPI.Controllers
             return CreatedAtAction(nameof(GetImageById), new { id = imageId }, productImage);
         }
 
-        [HttpPut("{productId}/images/{imageId}")]
+        [HttpPut("UpdateImage/{productId}/images/{imageId}")]
         public async Task<IActionResult> UpdateImage(int productId, int imageId, [FromForm] ProductImagesUpdateRequest request)
         {
             if (!ModelState.IsValid)
@@ -145,7 +147,7 @@ namespace eShop.BackendAPI.Controllers
             return Ok();
         }
 
-        [HttpDelete("{productId}/images/{imageId}")]
+        [HttpDelete("DeleteImage/{productId}/images/{imageId}")]
         public async Task<IActionResult> DeleteImage(int productId, int imageId)
         {
             if (!ModelState.IsValid)
@@ -162,12 +164,45 @@ namespace eShop.BackendAPI.Controllers
             return Ok();
         }
 
-        [HttpGet("{productId}/images/{imageId}")]
+        [HttpGet("GetImageById/{productId}/images/{imageId}")]
         public async Task<IActionResult> GetImageById(int productId, int imageId)
         {
             var productImage = await _imanageProductService.GetImageById(productId, imageId);
             if (productImage == null) { return BadRequest(); }
             return Ok(productImage);
+        }
+
+        [HttpPost("AddImages/{productId}")]
+        public async Task<IActionResult> AddImages(int productId, [FromForm] List<IFormFile> images)
+        {
+            if (images == null)
+            {
+                return BadRequest();
+            }
+
+            var adds = await _imanageProductService.AddManyImageProduct(productId, images);
+            if (adds == 0)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                return Ok();
+            }
+        }
+
+        [HttpGet("GetImagesByProductId/{productId}")]
+        public async Task<IActionResult> GetImagesByProductId(int productId)
+        {
+            var images = await _imanageProductService.GetImagesByProductId(productId);
+            if (images == null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                return Ok(images);
+            }
         }
     }
 }

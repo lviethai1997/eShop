@@ -1,6 +1,7 @@
 ﻿using eShop.ViewModels.Catalog.Common;
 using eShop.ViewModels.Catalog.ProductImages;
 using eShop.ViewModels.Catalog.Products;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -32,6 +33,10 @@ namespace eShop.Application.Catalog.Products
 
         Task<ProductViewModel> GetById(int productId, string langId);
 
-        Task<ProductImageViewModel> GetImageById(int productId,int imageId);
+        Task<ProductImageViewModel> GetImageById(int productId, int imageId);
+
+        Task<List<ProductImageViewModel>> GetImagesByProductId(int productId);
+
+        Task<int> AddManyImageProduct(int productId, List<IFormFile> images);
     }
 }

@@ -50,6 +50,31 @@ namespace eShop.Application.Catalog.Products
             return productImage.Id;
         }
 
+        public async Task<int> AddManyImageProduct(int productId, List<IFormFile> images)
+        {
+            if (images == null)
+            {
+                throw new EShopException("no image has been found!");
+            }
+
+            foreach (var item in images)
+            {
+                var productImage = new ProductImage()
+                {
+                    Caption = "Image for ProductId" + productId,
+                    CreatedDate = DateTime.Now,
+                    ProductId = productId,
+                };
+
+                productImage.ImagePath = await this.SaveFile(item);
+                productImage.FileSize = item.Length;
+
+                _context.ProductImages.Add(productImage);
+            }
+            await _context.SaveChangesAsync();
+            return images.Count;
+        }
+
         public async Task AddViewCount(int productId)
         {
             var product = await _context.Products.FindAsync(productId);
@@ -220,6 +245,22 @@ namespace eShop.Application.Catalog.Products
                 ProductId = productImage.ProductId
             };
             return productImageViewModel;
+        }
+
+        public async Task<List<ProductImageViewModel>> GetImagesByProductId(int productId)
+        {
+            var images = await _context.ProductImages.Where(x => x.ProductId == productId).Select(x => new ProductImageViewModel()
+            {
+                Id = x.Id,
+                ProductId = x.ProductId,
+                ImagePath = x.ImagePath,
+                Caption = x.Caption,
+                IsDefault = x.IsDefault,
+                FileSize = x.FileSize,
+                SortOrder = x.SortOrder,
+            }).ToListAsync();
+
+            return images;
         }
 
         public async Task<List<ProductImageViewModel>> GetListImage(int productId)
