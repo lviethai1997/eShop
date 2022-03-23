@@ -14,26 +14,24 @@ namespace eShop.BackendAPI.Controllers
     [Authorize]
     public class ProductController : ControllerBase
     {
-        private readonly IPublicProductService _ipublicProductService;
-        private readonly IManageProductService _imanageProductService;
+        private readonly IProductService _imanageProductService;
 
-        public ProductController(IPublicProductService ipublicProductService, IManageProductService imanageProductService)
+        public ProductController( IProductService imanageProductService)
         {
-            _ipublicProductService = ipublicProductService;
             _imanageProductService = imanageProductService;
         }
 
         [HttpGet("{langId}")]
         public async Task<IActionResult> Get(string langId, [FromQuery] GetPublicProductPagingRequest request)
         {
-            var product = await _ipublicProductService.GetAllByCategoryId(langId, request);
+            var product = await _imanageProductService.GetAllByCategoryId(langId, request);
             return Ok(product);
         }
 
         [HttpGet("GetAllPaging/{langId}")]
         public async Task<IActionResult> GetAllPaging(string langId, [FromQuery] GetPublicProductPagingRequest getPublicProductPagingRequest)
         {
-            var product = await _ipublicProductService.GetAllByCategoryId(langId, getPublicProductPagingRequest);
+            var product = await _imanageProductService.GetAllByCategoryId(langId, getPublicProductPagingRequest);
             return Ok(product);
         }
 

@@ -23,12 +23,18 @@ namespace eShop.AdminAplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.AddHttpClient();
-
+            
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
                 options.LoginPath = "/User/Login";
                 options.AccessDeniedPath = "/Account/Forbidden";
+            });
+
+            services.AddSession(option =>
+            {
+                option.IdleTimeout = TimeSpan.FromMinutes(30);
             });
 
             services.AddControllersWithViews().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidation>());
@@ -65,8 +71,10 @@ namespace eShop.AdminAplication
             app.UseAuthentication();
 
             app.UseRouting();
-        
+
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
