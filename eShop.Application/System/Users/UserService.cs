@@ -44,6 +44,7 @@ namespace eShop.Application.System.Users
                 var claims = new[]
                 {
                     new Claim(ClaimTypes.Email,user.Email),
+                    new Claim(ClaimTypes.Name,user.UserName),
                     new Claim(ClaimTypes.GivenName,user.FirstName),
                     new Claim(ClaimTypes.Role,String.Join(";", roles)),
                 };
