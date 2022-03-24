@@ -69,6 +69,31 @@ namespace eShop.Application.System.Users
             }
         }
 
+        public async Task<bool> DeleteUser(string id)
+        {
+            var DeleteUser = await _userManager.DeleteAsync(await _userManager.FindByIdAsync(id));
+            if (DeleteUser.Succeeded)
+                return true;
+            return false;
+        }
+
+        public async Task<UserUpdateRequest> GetUserById(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            var UserViewModel = new UserUpdateRequest()
+            {
+                Username = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Phone = user.PhoneNumber,
+                DoB = user.Dob
+            };
+
+            return UserViewModel;
+        }
+
         public async Task<PagedResult<UserViewModel>> GetUserPaging(UserPagingRequest request)
         {
             var query = _userManager.Users;
@@ -81,14 +106,14 @@ namespace eShop.Application.System.Users
             int totalRow = await query.CountAsync();
 
             var data = await query.Skip((request.PageIndex - 1) * request.PageSize).Take(request.PageSize).Select(x => new UserViewModel()
-                  {
-                      Email = x.Email,
-                      Phone = x.PhoneNumber,
-                      UserName = x.UserName,
-                      FirstName = x.FirstName,
-                      Id = x.Id,
-                      LastName = x.LastName
-                  }).ToListAsync();
+            {
+                Email = x.Email,
+                Phone = x.PhoneNumber,
+                UserName = x.UserName,
+                FirstName = x.FirstName,
+                Id = x.Id,
+                LastName = x.LastName
+            }).ToListAsync();
 
             var pagedResult = new PagedResult<UserViewModel>()
             {
@@ -119,6 +144,42 @@ namespace eShop.Application.System.Users
             {
                 return false;
             }
+        }
+
+        public async Task<bool> UpdateUser(UserUpdateRequest request)
+        {
+            var findUser = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == request.Username);
+
+            if (findUser == null)
+            {
+                return false;
+            }
+
+            findUser.FirstName = request.FirstName;
+            findUser.LastName = request.LastName;
+            findUser.Email = request.Email;
+            findUser.Dob = request.DoB;
+            findUser.UserName = request.Username;
+            findUser.PhoneNumber = request.Phone;
+
+            var appUser = await _userManager.FindByIdAsync(findUser.Id.ToString());
+
+            if (!string.IsNullOrEmpty(request.NewPassword) && !string.IsNullOrEmpty(request.OldPassword))
+            {
+                var rs = await _userManager.ChangePasswordAsync(appUser, request.OldPassword, request.NewPassword);
+                if (rs.Succeeded)
+                {
+                    var result = await _userManager.UpdateAsync(findUser);
+                    if (result.Succeeded)
+                        return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
         }
     }
 }

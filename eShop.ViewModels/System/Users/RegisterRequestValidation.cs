@@ -15,6 +15,8 @@ namespace eShop.ViewModels.System.Users
             RuleFor(x=>x.Email).NotEmpty().EmailAddress().Length(2, 200).Matches(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").WithMessage("Email is incorrect");
             RuleFor(x => x.Phone).NotEmpty();
             RuleFor(x => x.Password).NotEmpty().Length(6,20).WithMessage("Password must beween 6 and 20 chars");
+            RuleFor(x => x.ConfirmPassword).NotEmpty().Length(6,20).WithMessage("Password must beween 6 and 20 chars");
+            RuleFor(x => x.UserName).NotEmpty().Length(6,20).WithMessage("UserName must beween 6 and 20 chars");
             RuleFor(x => x).Custom((request, context) =>
             {
                 if (request.Password != request.ConfirmPassword)

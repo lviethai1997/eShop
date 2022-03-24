@@ -56,5 +56,39 @@ namespace eShop.AdminAplication.Controllers
 
             return View(request);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(string id)
+        {
+            var user = await _userApiClient.GetUserById(id);
+
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(UserUpdateRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            var result = await _userApiClient.UpdateUser(request);
+
+            if (result)
+            {
+                return RedirectToAction("Index");
+            }
+
+            return View(request);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var result = await _userApiClient.DeleteUser(id);
+            if (!result) { return View(); }
+            return RedirectToAction("Index", "User");
+        }
     }
 }

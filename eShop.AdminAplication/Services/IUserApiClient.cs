@@ -11,5 +11,11 @@ namespace eShop.AdminAplication.Services
         Task<PagedResult<UserViewModel>> GetUserPaging(UserPagingRequest request);
 
         Task<bool> CreateUser(RegisterRequest request);
+
+        Task<bool> UpdateUser(UserUpdateRequest request);
+
+        Task<UserUpdateRequest> GetUserById(string id);
+
+        Task<bool> DeleteUser(string id);
     }
 }

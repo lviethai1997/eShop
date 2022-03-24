@@ -40,29 +40,7 @@
                         <th></th>
                     </tr>
                 </thead>
-                <tfoot>
-                    <tr>
-                        <th>
-                            UserName
-                        </th>
-                        <th>
-                            FirstName
-                        </th>
-                        <th>
-                            LastName
-                        </th>
-                        <th>
-                            Email
-                        </th>
-                        <th>
-                            Phone
-                        </th>
-                        <th>
-                            Id
-                        </th>
-                        <th></th>
-                    </tr>
-                </tfoot>
+                
                 <tbody>
                     @foreach (var item in Model.Items)
                     {
@@ -86,9 +64,16 @@
                                 @Html.DisplayFor(modelItem => item.Id)
                             </td>
                             <td>
-                                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                                @Html.ActionLink("Edit", "Edit","User", new { item.Id },new { @class= "btn btn-outline-primary"}) |
+                                @Html.ActionLink("Details", "Details","User", new { item.Id },new { @class= "btn btn-outline-success"}) |
+                                @Html.ActionLink("Delete", "Delete", "User", new {id = item.Id },new { @class= "btn btn-outline-danger"})
+                               @* <form asp-action="Delete" method="post"> 
+                                    @{
+                                        string id = item.Id.ToString();
+                                    }
+                                    <input type="hidden" asp-for="@id" />
+                                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                                </form>*@
                             </td>
                         </tr>
                     }

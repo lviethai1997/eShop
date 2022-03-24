@@ -1,9 +1,5 @@
 ﻿using eShop.ViewModels.Catalog.Common;
 using eShop.ViewModels.System.Users;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace eShop.Application.System.Users
@@ -14,6 +10,12 @@ namespace eShop.Application.System.Users
 
         Task<bool> Register(RegisterRequest request);
 
-        Task<PagedResult<UserViewModel>> GetUserPaging(UserPagingRequest request); 
+        Task<PagedResult<UserViewModel>> GetUserPaging(UserPagingRequest request);
+
+        Task<bool> UpdateUser(UserUpdateRequest user);
+
+        Task<UserUpdateRequest> GetUserById(string id);
+
+        Task<bool> DeleteUser(string id);
     }
 }

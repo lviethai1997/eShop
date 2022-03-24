@@ -46,6 +46,29 @@ namespace eShop.AdminAplication.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<bool> DeleteUser(string id)
+        {
+            var client = _httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(_configuration["BaseAddress"]);
+
+            var response = await client.DeleteAsync($"api/users/DeleteUser?id={id}");
+
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<UserUpdateRequest> GetUserById(string id)
+        {
+            var client = _httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(_configuration["BaseAddress"]);
+
+            var response = await client.GetAsync($"api/users/GetUserById?id={id}");
+
+            var body = await response.Content.ReadAsStringAsync();
+            var user = JsonConvert.DeserializeObject<UserUpdateRequest>(body);
+
+            return user;
+        }
+
         public async Task<PagedResult<UserViewModel>> GetUserPaging(UserPagingRequest request)
         {
             var client = _httpClientFactory.CreateClient();
@@ -55,6 +78,19 @@ namespace eShop.AdminAplication.Services
             var body = await response.Content.ReadAsStringAsync();
             var users = JsonConvert.DeserializeObject<PagedResult<UserViewModel>>(body);
             return users;
+        }
+
+        public async Task<bool> UpdateUser(UserUpdateRequest request)
+        {
+            var json = JsonConvert.SerializeObject(request);
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var client = _httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(_configuration["BaseAddress"]);
+
+            var response = await client.PutAsync($"api/users/UpdateUser", httpContent);
+
+            return response.IsSuccessStatusCode;
         }
     }
 }

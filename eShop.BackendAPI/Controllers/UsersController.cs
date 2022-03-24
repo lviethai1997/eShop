@@ -1,7 +1,6 @@
 ﻿using eShop.Application.System.Users;
 using eShop.ViewModels.System.Users;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -30,7 +29,7 @@ namespace eShop.BackendAPI.Controllers
             {
                 return BadRequest("Username or Password is Incorrect");
             }
-            
+
             return Ok(resultToken);
         }
 
@@ -54,6 +53,41 @@ namespace eShop.BackendAPI.Controllers
         {
             var users = await _userService.GetUserPaging(request);
             return Ok(users);
+        }
+
+        [HttpPut("UpdateUser")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateRequest userUpdateRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var UserUpdate = await _userService.UpdateUser(userUpdateRequest);
+            if (!UserUpdate)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                return Ok();
+            }
+        }
+
+        [HttpGet("GetUserById")]
+        public async Task<IActionResult> GetUserById([FromQuery] string id)
+        {
+            var user = await _userService.GetUserById(id);
+            if (user == null) { return BadRequest(); }
+            return Ok(user);
+        }
+
+        [HttpDelete("DeleteUser")]
+        public async Task<IActionResult> DeleteUser([FromQuery] string id)
+        {
+            var deleteUser = await _userService.DeleteUser(id);
+            if (!deleteUser) { return BadRequest(); }
+            return Ok();
         }
     }
 }
