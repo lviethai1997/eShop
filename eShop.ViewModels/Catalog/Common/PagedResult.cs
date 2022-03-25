@@ -2,9 +2,8 @@
 
 namespace eShop.ViewModels.Catalog.Common
 {
-    public class PagedResult<T>
+    public class PagedResult<T> : PagedResultBase
     {
-        public int TotalRecord { get; set; }
         public List<T> Items { set; get; }
     }
 }

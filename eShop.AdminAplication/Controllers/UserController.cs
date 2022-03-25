@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Threading.Tasks;
 
 namespace eShop.AdminAplication.Controllers
@@ -17,7 +18,7 @@ namespace eShop.AdminAplication.Controllers
             _userApiClient = userApiClient;
         }
 
-        public async Task<IActionResult> Index(int pageIndex = 1, int pageSize = 10, string keyword = null)
+        public async Task<IActionResult> Index(int pageIndex = 1, int pageSize = 1, string keyword = null)
         {
             var session = HttpContext.Session.GetString("Token");
             var request = new UserPagingRequest()
@@ -55,6 +56,14 @@ namespace eShop.AdminAplication.Controllers
             }
 
             return View(request);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var result = await _userApiClient.GetUserById(id.ToString());
+
+            return View(result);
         }
 
         [HttpGet]
