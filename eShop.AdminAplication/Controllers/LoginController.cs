@@ -49,6 +49,12 @@ namespace eShop.AdminAplication.Controllers
 
             var token = await _userApiClient.Authenticate(request);
 
+            if(token.ResultObject == null)
+            {
+                ModelState.AddModelError("",token.Message);
+                return View();
+            }
+
             var userPrincipal = this.ValidateToken(token.ResultObject);
 
             var authPropreties = new AuthenticationProperties

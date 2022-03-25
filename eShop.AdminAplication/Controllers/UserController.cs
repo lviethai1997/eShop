@@ -18,7 +18,7 @@ namespace eShop.AdminAplication.Controllers
             _userApiClient = userApiClient;
         }
 
-        public async Task<IActionResult> Index(int pageIndex = 1, int pageSize = 1, string keyword = null)
+        public async Task<IActionResult> Index(int pageIndex = 1, int pageSize = 10, string keyword = null)
         {
             var request = new UserPagingRequest()
             {
@@ -28,6 +28,8 @@ namespace eShop.AdminAplication.Controllers
             };
 
             var data = await _userApiClient.GetUserPaging(request);
+
+            ViewBag.keyword = keyword;
 
             return View(data.ResultObject);
         }

@@ -40,9 +40,11 @@ namespace eShop.AdminAplication.Services
 
         public async Task<ApiResult<bool>> CreateUser(RegisterRequest request)
         {
+            var session = _IhttpContextAccessor.HttpContext.Session.GetString("Token");
             var json = JsonConvert.SerializeObject(request);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
             var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session);
             client.BaseAddress = new Uri(_configuration["BaseAddress"]);
             var response = await client.PostAsync($"api/users/Register", httpContent);
             var result = await response.Content.ReadAsStringAsync();
@@ -55,8 +57,10 @@ namespace eShop.AdminAplication.Services
 
         public async Task<ApiResult<bool>> DeleteUser(string id)
         {
+            var session = _IhttpContextAccessor.HttpContext.Session.GetString("Token");
             var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri(_configuration["BaseAddress"]);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session);
 
             var response = await client.DeleteAsync($"api/users/DeleteUser?id={id}");
             string result = await response.Content.ReadAsStringAsync();
