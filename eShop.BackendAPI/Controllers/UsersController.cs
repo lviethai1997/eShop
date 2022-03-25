@@ -2,6 +2,7 @@
 using eShop.ViewModels.System.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace eShop.BackendAPI.Controllers
@@ -25,7 +26,7 @@ namespace eShop.BackendAPI.Controllers
                 return BadRequest(ModelState);
 
             var resultToken = await _userService.Authencate(request);
-            if (resultToken == null)
+            if (string.IsNullOrEmpty(resultToken.ResultObject))
             {
                 return BadRequest("Username or Password is Incorrect");
             }
@@ -40,12 +41,12 @@ namespace eShop.BackendAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var resultToken = await _userService.Register(request);
-            if (resultToken == false)
+            var Register = await _userService.Register(request);
+            if (!Register.IsSuccessed)
             {
-                return BadRequest("Register unsuccessful");
+                return BadRequest(Register.Message);
             }
-            return Ok();
+            return Ok(Register);
         }
 
         [HttpGet("paging")]
@@ -56,21 +57,21 @@ namespace eShop.BackendAPI.Controllers
         }
 
         [HttpPut("UpdateUser")]
-        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateRequest userUpdateRequest)
+        public async Task<IActionResult> UpdateUser([FromQuery] Guid id, [FromBody] UserUpdateRequest userUpdateRequest)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var UserUpdate = await _userService.UpdateUser(userUpdateRequest);
-            if (!UserUpdate)
+            var UserUpdate = await _userService.UpdateUser(id, userUpdateRequest);
+            if (!UserUpdate.IsSuccessed)
             {
-                return BadRequest();
+                return BadRequest(UserUpdate);
             }
             else
             {
-                return Ok();
+                return Ok(UserUpdate);
             }
         }
 
@@ -86,8 +87,8 @@ namespace eShop.BackendAPI.Controllers
         public async Task<IActionResult> DeleteUser([FromQuery] string id)
         {
             var deleteUser = await _userService.DeleteUser(id);
-            if (!deleteUser) { return BadRequest(); }
-            return Ok();
+            if (!deleteUser.IsSuccessed) { return BadRequest(); }
+            return Ok(deleteUser);
         }
     }
 }

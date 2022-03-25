@@ -1,6 +1,7 @@
 ﻿using eShop.Data.Entities;
 using eShop.ViewModels.Catalog.Common;
 using eShop.ViewModels.System.Users;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,18 +20,20 @@ namespace eShop.Application.System.Users
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<AppRole> _roleManager;
+       
         private readonly IConfiguration _config;
 
         //UserManager &  SignInManager là thư viên của entity
-        public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IConfiguration config)
+        public UserService( UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IConfiguration config)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _config = config;
+            
         }
 
-        public async Task<string> Authencate(LoginRequest request)
+        public async Task<ApiResult<string>> Authencate(LoginRequest request)
         {
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user == null)
@@ -61,7 +64,8 @@ namespace eShop.Application.System.Users
                     expires: DateTime.Now.AddHours(3),
                     signingCredentials: creds);
 
-                return new JwtSecurityTokenHandler().WriteToken(token);
+                var tokenResult = new JwtSecurityTokenHandler().WriteToken(token);
+                return new ApiSuccessResult<string>(tokenResult);
             }
             else
             {
@@ -69,15 +73,15 @@ namespace eShop.Application.System.Users
             }
         }
 
-        public async Task<bool> DeleteUser(string id)
+        public async Task<ApiResult<bool>> DeleteUser(string id)
         {
             var DeleteUser = await _userManager.DeleteAsync(await _userManager.FindByIdAsync(id));
             if (DeleteUser.Succeeded)
-                return true;
-            return false;
+                return new ApiSuccessResult<bool>(true);
+            return new ApiErrorResult<bool>("Failed");
         }
 
-        public async Task<UserUpdateRequest> GetUserById(string id)
+        public async Task<ApiResult<UserUpdateRequest>> GetUserById(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
 
@@ -91,10 +95,10 @@ namespace eShop.Application.System.Users
                 DoB = user.Dob
             };
 
-            return UserViewModel;
+            return new ApiSuccessResult<UserUpdateRequest>(UserViewModel);
         }
 
-        public async Task<PagedResult<UserViewModel>> GetUserPaging(UserPagingRequest request)
+        public async Task<ApiResult<PagedResult<UserViewModel>>> GetUserPaging(UserPagingRequest request)
         {
             var query = _userManager.Users;
 
@@ -122,11 +126,23 @@ namespace eShop.Application.System.Users
                 PageIndex = request.PageIndex,
                 Items = data
             };
-            return pagedResult;
+            return new ApiSuccessResult<PagedResult<UserViewModel>>(pagedResult);
         }
 
-        public async Task<bool> Register(RegisterRequest request)
+        public async Task<ApiResult<bool>> Register(RegisterRequest request)
         {
+            var CheckUsername = await _userManager.FindByNameAsync(request.UserName);
+            if (CheckUsername != null)
+            {
+                return new ApiErrorResult<bool>("Username is exists");
+            }
+
+            var checkEmail = await _userManager.FindByNameAsync(request.Email);
+            if (checkEmail != null)
+            {
+                return new ApiErrorResult<bool>("Email is exists");
+            }
+
             var user = new AppUser()
             {
                 Dob = request.DoB,
@@ -140,21 +156,21 @@ namespace eShop.Application.System.Users
             var result = await _userManager.CreateAsync(user, request.Password);
             if (result.Succeeded)
             {
-                return true;
+                return new ApiErrorResult<bool>("Successful");
             }
             else
             {
-                return false;
+                return new ApiErrorResult<bool>("failed");
             }
         }
 
-        public async Task<bool> UpdateUser(UserUpdateRequest request)
+        public async Task<ApiResult<bool>> UpdateUser(Guid id,UserUpdateRequest request)
         {
-            var findUser = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == request.Username);
+            var findUser = await _userManager.FindByIdAsync(id.ToString());
 
             if (findUser == null)
             {
-                return false;
+                return new ApiErrorResult<bool>("Can't find User: "+request.Username);
             }
 
             findUser.FirstName = request.FirstName;
@@ -171,17 +187,20 @@ namespace eShop.Application.System.Users
                 var rs = await _userManager.ChangePasswordAsync(appUser, request.OldPassword, request.NewPassword);
                 if (rs.Succeeded)
                 {
-                    var result = await _userManager.UpdateAsync(findUser);
-                    if (result.Succeeded)
-                        return true;
+                    var update = await _userManager.UpdateAsync(findUser);
+                    if (update.Succeeded)
+                        return new ApiSuccessResult<bool>(true);
                 }
                 else
                 {
-                    return false;
+                    return new ApiErrorResult<bool>("Failed");
                 }
             }
 
-            return false;
+            var result = await _userManager.UpdateAsync(findUser);
+            if (result.Succeeded)
+                return new ApiSuccessResult<bool>(true);
+            return new ApiErrorResult<bool>("Failed");
         }
     }
 }
