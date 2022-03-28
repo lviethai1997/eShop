@@ -15,8 +15,10 @@ namespace eShop.Application.System.Users
 
         Task<ApiResult<bool>> UpdateUser(Guid id,UserUpdateRequest user);
 
-        Task<ApiResult<UserUpdateRequest>> GetUserById(string id);
+        Task<ApiResult<UserViewModel>> GetUserById(string id);
 
         Task<ApiResult<bool>> DeleteUser(string id);
+
+        Task<ApiResult<bool>> RoleAssign(Guid id,RoleAssignRequest request);
     }
 }

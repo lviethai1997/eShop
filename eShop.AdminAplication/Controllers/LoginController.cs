@@ -44,15 +44,15 @@ namespace eShop.AdminAplication.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(ModelState);
+                return View("Index");
             }
 
             var token = await _userApiClient.Authenticate(request);
 
-            if(token.ResultObject == null)
+            if (token.ResultObject == null)
             {
-                ModelState.AddModelError("",token.Message);
-                return View();
+                ModelState.AddModelError("", token.Message);
+                return View("Index");
             }
 
             var userPrincipal = this.ValidateToken(token.ResultObject);
@@ -67,7 +67,7 @@ namespace eShop.AdminAplication.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, authPropreties);
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "User");
         }
 
         private ClaimsPrincipal ValidateToken(string jwtToken)

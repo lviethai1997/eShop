@@ -1,7 +1,6 @@
 ﻿using eShop.Data.Entities;
 using eShop.ViewModels.Catalog.Common;
 using eShop.ViewModels.System.Users;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,17 +19,16 @@ namespace eShop.Application.System.Users
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<AppRole> _roleManager;
-       
+
         private readonly IConfiguration _config;
 
         //UserManager &  SignInManager là thư viên của entity
-        public UserService( UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IConfiguration config)
+        public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IConfiguration config)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _config = config;
-            
         }
 
         public async Task<ApiResult<string>> Authencate(LoginRequest request)
@@ -69,7 +67,7 @@ namespace eShop.Application.System.Users
             }
             else
             {
-                return null;
+                return new ApiErrorResult<string>("Wrong Username or password");
             }
         }
 
@@ -81,21 +79,23 @@ namespace eShop.Application.System.Users
             return new ApiErrorResult<bool>("Failed");
         }
 
-        public async Task<ApiResult<UserUpdateRequest>> GetUserById(string id)
+        public async Task<ApiResult<UserViewModel>> GetUserById(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
+            var roles = await _userManager.GetRolesAsync(user);
 
-            var UserViewModel = new UserUpdateRequest()
+            var UserViewModel = new UserViewModel()
             {
                 Username = user.UserName,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
                 Phone = user.PhoneNumber,
-                DoB = user.Dob
+                DoB = user.Dob,
+                Roles = roles
             };
 
-            return new ApiSuccessResult<UserUpdateRequest>(UserViewModel);
+            return new ApiSuccessResult<UserViewModel>(UserViewModel);
         }
 
         public async Task<ApiResult<PagedResult<UserViewModel>>> GetUserPaging(UserPagingRequest request)
@@ -113,7 +113,7 @@ namespace eShop.Application.System.Users
             {
                 Email = x.Email,
                 Phone = x.PhoneNumber,
-                UserName = x.UserName,
+                Username = x.UserName,
                 FirstName = x.FirstName,
                 Id = x.Id,
                 LastName = x.LastName
@@ -137,7 +137,7 @@ namespace eShop.Application.System.Users
                 return new ApiErrorResult<bool>("Username is exists");
             }
 
-            var checkEmail = await _userManager.FindByNameAsync(request.Email);
+            var checkEmail = await _userManager.FindByEmailAsync(request.Email);
             if (checkEmail != null)
             {
                 return new ApiErrorResult<bool>("Email is exists");
@@ -156,7 +156,7 @@ namespace eShop.Application.System.Users
             var result = await _userManager.CreateAsync(user, request.Password);
             if (result.Succeeded)
             {
-                return new ApiErrorResult<bool>("Successful");
+                return new ApiSuccessResult<bool>();
             }
             else
             {
@@ -164,13 +164,42 @@ namespace eShop.Application.System.Users
             }
         }
 
-        public async Task<ApiResult<bool>> UpdateUser(Guid id,UserUpdateRequest request)
+        public async Task<ApiResult<bool>> RoleAssign(Guid id, RoleAssignRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return new ApiErrorResult<bool>("Can't find username");
+            }
+            var removeRoles = request.Roles.Where(x => x.Selected == false).Select(x => x.Name).ToList();
+            //await _userManager.RemoveFromRolesAsync(user, removeRoles);
+            foreach (var roleName in removeRoles)
+            {
+                if (await _userManager.IsInRoleAsync(user, roleName) == true)
+                {
+                    await _userManager.RemoveFromRoleAsync(user, roleName);
+                }
+            }
+
+            var addedRoles = request.Roles.Where(x => x.Selected).Select(x => x.Name).ToList();
+            foreach (var roleName in addedRoles)
+            {
+                if (await _userManager.IsInRoleAsync(user, roleName) == false)
+                {
+                    await _userManager.AddToRoleAsync(user, roleName);
+                }
+            }
+
+            return new ApiSuccessResult<bool>();
+        }
+
+        public async Task<ApiResult<bool>> UpdateUser(Guid id, UserUpdateRequest request)
         {
             var findUser = await _userManager.FindByIdAsync(id.ToString());
 
             if (findUser == null)
             {
-                return new ApiErrorResult<bool>("Can't find User: "+request.Username);
+                return new ApiErrorResult<bool>("Can't find User: " + request.Username);
             }
 
             findUser.FirstName = request.FirstName;

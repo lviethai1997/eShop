@@ -9,9 +9,11 @@ namespace eShop.BackendAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        
 
         public UsersController(IUserService userService)
         {
@@ -28,7 +30,7 @@ namespace eShop.BackendAPI.Controllers
             var resultToken = await _userService.Authencate(request);
             if (string.IsNullOrEmpty(resultToken.ResultObject))
             {
-                return BadRequest("Username or Password is Incorrect");
+                return BadRequest(resultToken.Message);
             }
 
             return Ok(resultToken);
@@ -54,6 +56,26 @@ namespace eShop.BackendAPI.Controllers
         {
             var users = await _userService.GetUserPaging(request);
             return Ok(users);
+        }
+
+        [HttpPost("RoleAssign/{id}/roles")]
+        public async Task<IActionResult> RoleAssign(Guid id, [FromBody] RoleAssignRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _userService.RoleAssign(id, request);
+
+            if (!result.IsSuccessed)
+            {
+                return BadRequest(result);
+            }
+            else
+            {
+                return Ok(result);
+            }
         }
 
         [HttpPut("UpdateUser")]

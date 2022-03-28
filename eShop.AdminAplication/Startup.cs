@@ -1,4 +1,5 @@
 using eShop.AdminAplication.Services;
+using eShop.Application.System.Roles;
 using eShop.ViewModels.System.Users;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -24,9 +25,8 @@ namespace eShop.AdminAplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
             services.AddHttpClient();
-            
+
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
                 options.LoginPath = "/Login/Index";
@@ -43,6 +43,7 @@ namespace eShop.AdminAplication
             services.AddControllersWithViews().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidation>());
 
             services.AddTransient<IUserApiClient, UserApiClient>();
+            services.AddTransient<IRoleApiClient, RoleApiClient>();
 
             IMvcBuilder builder = services.AddRazorPages();
 

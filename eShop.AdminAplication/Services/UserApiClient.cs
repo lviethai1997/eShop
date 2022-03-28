@@ -35,7 +35,7 @@ namespace eShop.AdminAplication.Services
             {
                 return JsonConvert.DeserializeObject<ApiSuccessResult<string>>(await response.Content.ReadAsStringAsync());
             }
-            return JsonConvert.DeserializeObject<ApiErrorResult<string>>(await response.Content.ReadAsStringAsync());
+            return new ApiErrorResult<string>(await response.Content.ReadAsStringAsync());
         }
 
         public async Task<ApiResult<bool>> CreateUser(RegisterRequest request)
@@ -48,11 +48,12 @@ namespace eShop.AdminAplication.Services
             client.BaseAddress = new Uri(_configuration["BaseAddress"]);
             var response = await client.PostAsync($"api/users/Register", httpContent);
             var result = await response.Content.ReadAsStringAsync();
+
             if (response.IsSuccessStatusCode)
             {
-                return JsonConvert.DeserializeObject<ApiSuccessResult<bool>>(result);
+                return new ApiSuccessResult<bool>();
             }
-            return JsonConvert.DeserializeObject<ApiErrorResult<bool>>(result);
+            return new ApiErrorResult<bool>(result);
         }
 
         public async Task<ApiResult<bool>> DeleteUser(string id)
@@ -66,10 +67,10 @@ namespace eShop.AdminAplication.Services
             string result = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
                 return JsonConvert.DeserializeObject<ApiSuccessResult<bool>>(result);
-            return JsonConvert.DeserializeObject<ApiErrorResult<bool>>(result);
+            return new ApiErrorResult<bool>(result);
         }
 
-        public async Task<ApiResult<UserUpdateRequest>> GetUserById(string id)
+        public async Task<ApiResult<UserViewModel>> GetUserById(string id)
         {
             var session = _IhttpContextAccessor.HttpContext.Session.GetString("Token");
             var client = _httpClientFactory.CreateClient();
@@ -79,8 +80,8 @@ namespace eShop.AdminAplication.Services
             var body = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
-                return JsonConvert.DeserializeObject<ApiSuccessResult<UserUpdateRequest>>(body);
-            return JsonConvert.DeserializeObject<ApiErrorResult<UserUpdateRequest>>(body);
+                return JsonConvert.DeserializeObject<ApiSuccessResult<UserViewModel>>(body);
+            return new ApiErrorResult<UserViewModel>(body);
         }
 
         public async Task<ApiResult<PagedResult<UserViewModel>>> GetUserPaging(UserPagingRequest request)
@@ -93,6 +94,24 @@ namespace eShop.AdminAplication.Services
             var body = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<ApiSuccessResult<PagedResult<UserViewModel>>>(body);
+        }
+
+        public async Task<ApiResult<bool>> RoleAssign(Guid id, RoleAssignRequest request)
+        {
+            var json = JsonConvert.SerializeObject(request);
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var session = _IhttpContextAccessor.HttpContext.Session.GetString("Token");
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session);
+            client.BaseAddress = new Uri(_configuration["BaseAddress"]);
+
+            var response = await client.PostAsync($"api/users/RoleAssign/{id}/roles", httpContent);
+            var result = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+                return JsonConvert.DeserializeObject<ApiSuccessResult<bool>>(result);
+            return JsonConvert.DeserializeObject<ApiErrorResult<bool>>(result);
         }
 
         public async Task<ApiResult<bool>> UpdateUser(Guid id, UserUpdateRequest request)

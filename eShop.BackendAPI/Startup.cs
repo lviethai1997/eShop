@@ -1,5 +1,6 @@
 using eShop.Application.Catalog.Products;
 using eShop.Application.Common;
+using eShop.Application.System.Roles;
 using eShop.Application.System.Users;
 using eShop.Data.EF;
 using eShop.Data.Entities;
@@ -44,6 +45,7 @@ namespace eShop.BackendAPI
             services.AddTransient<UserManager<AppUser>, UserManager<AppUser>>();
             services.AddTransient<RoleManager<AppRole>, RoleManager<AppRole>>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IRoleService, RoleService>();
 
             services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidation>());
 
