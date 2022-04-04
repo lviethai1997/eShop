@@ -1,4 +1,5 @@
 using eShop.AdminAplication.Services;
+using eShop.Application.System.Languages;
 using eShop.Application.System.Roles;
 using eShop.ViewModels.System.Users;
 using FluentValidation.AspNetCore;
@@ -44,6 +45,9 @@ namespace eShop.AdminAplication
 
             services.AddTransient<IUserApiClient, UserApiClient>();
             services.AddTransient<IRoleApiClient, RoleApiClient>();
+            services.AddTransient<ILanguageApiClient, LanguageApiClient>();
+
+
 
             IMvcBuilder builder = services.AddRazorPages();
 
