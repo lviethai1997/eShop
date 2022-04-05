@@ -43,16 +43,17 @@ namespace eShop.BackendAPI.Controllers
             return Ok(product);
         }
 
-        [HttpGet("getById/{productId}/{langId}")]
+        [HttpGet("{productId}/{langId}")]
         public async Task<IActionResult> getById(int productId, string langId)
         {
             var product = await _imanageProductService.GetById(productId, langId);
             if (product == null)
-                return NotFound();
+                return BadRequest("Cannot find product");
             return Ok(product);
         }
 
         [HttpPost("CreateProduct")]
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> CreateProduct([FromForm] ProductCreateRequest productCreateRequest)
         {
             if (!ModelState.IsValid)
@@ -68,7 +69,7 @@ namespace eShop.BackendAPI.Controllers
             else
             {
                 var product = await _imanageProductService.GetById(productId, productCreateRequest.LanguageID);
-                return CreatedAtAction(nameof(getById), new { id = productId }, product);
+                return CreatedAtAction(nameof(getById), new { productId = productId, langId = product.LanguageId }, product);
             }
         }
 

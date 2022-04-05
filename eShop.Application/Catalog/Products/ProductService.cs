@@ -111,7 +111,7 @@ namespace eShop.Application.Catalog.Products
                 {
                     new ProductImage()
                     {
-                        Caption = "Thumbnail Image",
+                        Caption = "ThumbnailImage",
                         CreatedDate = DateTime.Now,
                         FileSize = request.ThumbnailImage.Length,
                         ImagePath = await this.SaveFile(request.ThumbnailImage),
@@ -122,7 +122,7 @@ namespace eShop.Application.Catalog.Products
             }
 
             _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+          var result =  await _context.SaveChangesAsync();
             return product.Id;
         }
 
