@@ -92,6 +92,7 @@
                                 @Html.ActionLink("Edit", "Edit","Product", new { item.Id },new { @class= "btn btn-outline-primary"}) |
                                 @Html.ActionLink("Details", "Details","Product", new { item.Id },new { @class= "btn btn-outline-success"}) |
                                 @Html.ActionLink("Delete", "Delete", "Product", new {id = item.Id },new { @class= "btn btn-outline-danger"}) |
+                                @Html.ActionLink("Set Category", "CategoryAssign", "Product", new {productId = item.Id },new { @class= "btn btn-outline-danger"}) 
                                 @* <form asp-action="Delete" method="post">
                                     @{
                                     string id = item.Id.ToString();

@@ -43,7 +43,7 @@ namespace eShop.BackendAPI.Controllers
             return Ok(product);
         }
 
-        [HttpGet("{productId}/{langId}")]
+        [HttpGet("getById/{productId}/{langId}")]
         public async Task<IActionResult> getById(int productId, string langId)
         {
             var product = await _imanageProductService.GetById(productId, langId);
@@ -71,6 +71,25 @@ namespace eShop.BackendAPI.Controllers
                 var product = await _imanageProductService.GetById(productId, productCreateRequest.LanguageID);
                 return CreatedAtAction(nameof(getById), new { productId = productId, langId = product.LanguageId }, product);
             }
+        }
+
+        [HttpPost("CategoryAssign/{id}/categories")]
+        public async Task<IActionResult> CategoryAssign(int id,[FromBody] CategoryAssignRequest categoryAssignRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var result = await _imanageProductService.CategoryAssign(id, categoryAssignRequest);
+
+            if (!result.IsSuccessed)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+
         }
 
         [HttpPut("UpdateProduct")]

@@ -1,6 +1,7 @@
 ﻿using eShop.AdminAplication.Services;
 using eShop.Application.Catalog.Products;
 using eShop.Utilities.Constants;
+using eShop.ViewModels.Catalog.Common;
 using eShop.ViewModels.Catalog.Products;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +43,7 @@ namespace eShop.AdminAplication.Controllers
             {
                 Text = x.Name,
                 Value = x.Id.ToString(),
-                Selected = cateId.HasValue && cateId.Value.ToString() ==  x.Id.ToString()
+                Selected = cateId.HasValue && cateId.Value.ToString() == x.Id.ToString()
             });
 
             var data = await _productApiClient.GetProductPaging(request);
@@ -82,5 +83,61 @@ namespace eShop.AdminAplication.Controllers
             ModelState.AddModelError("", "Error");
             return View(request);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> CategoryAssign(int productId)
+        {
+            var roleAssignRequest =  await GetRoleAssignRequest(productId); 
+            return View(roleAssignRequest);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CategoryAssign( CategoryAssignRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(request);
+            }
+
+            var result = await _productApiClient.CategoryAssign(request.Id, request);
+
+            if (result.IsSuccessed)
+            {
+                TempData["result"] = "";
+                return RedirectToAction("index");
+            }
+
+            ModelState.AddModelError("", result.Message);
+            var assign = await GetRoleAssignRequest(request.Id);
+
+            return View(assign);
+        }
+
+
+
+
+        public async Task<CategoryAssignRequest> GetRoleAssignRequest(int productId)
+        {
+            var languageId = HttpContext.Session.GetString(SystemConstants.AppSettings.DefaultLangId);
+
+            var productObj = await _productApiClient.GetById(productId, languageId);
+            var categories = await _categoryApiClient.GetAll(languageId);
+
+            var CategoriesAssignRequest = new CategoryAssignRequest();
+            foreach (var role in categories)
+            {
+                CategoriesAssignRequest.Categories.Add(new SelectItem()
+                {
+                    Id = role.Id.ToString(),
+                    Name = role.Name,
+                    Selected = productObj.Categories.Contains(role.Name)
+                });
+            }
+
+            CategoriesAssignRequest.Id = productId;
+
+            return CategoriesAssignRequest;
+        }
+
     }
 }

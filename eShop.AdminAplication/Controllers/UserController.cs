@@ -160,7 +160,6 @@ namespace eShop.AdminAplication.Controllers
                 {
                     Id = item.Id.ToString(),
                     Name = item.Name,
-                    Description = item.Description,
                     Selected = result.ResultObject.Roles.Contains(item.Name)
                 });
             }

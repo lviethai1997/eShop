@@ -8,21 +8,42 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace eShop.AdminAplication.Services
 {
-    public class ProductApiClient : IProductApiClient
+    public class ProductApiClient : BaseApiClient, IProductApiClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _IhttpContextAccessor;
 
         public ProductApiClient(IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+
+            : base(httpContextAccessor, httpClientFactory, configuration)
         {
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
             _IhttpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<ApiResult<bool>> CategoryAssign(int productId, CategoryAssignRequest request)
+        {
+            var json = JsonConvert.SerializeObject(request);
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var session = _IhttpContextAccessor.HttpContext.Session.GetString("Token");
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session);
+            client.BaseAddress = new Uri(_configuration["BaseAddress"]);
+
+            var response = await client.PostAsync($"api/Product/CategoryAssign/{productId}/categories", httpContent);
+            var result = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+                return JsonConvert.DeserializeObject<ApiSuccessResult<bool>>(result);
+            return JsonConvert.DeserializeObject<ApiErrorResult<bool>>(result);
         }
 
         public async Task<bool> CreateProduct(ProductCreateRequest request)
@@ -58,10 +79,12 @@ namespace eShop.AdminAplication.Services
 
             var response = await client.PostAsync($"api/product/CreateProduct", requestContent);
             return response.IsSuccessStatusCode;
+        }
 
-
-
-
+        public async Task<ProductViewModel> GetById(int productId, string langid)
+        {
+            var data = await GetAsync<ProductViewModel>($"api/Product/getById/{productId}/{langid}");
+            return data;
         }
 
         public async Task<PagedResult<ProductViewModel>> GetProductPaging(GetManageProductPagingRequest request)
