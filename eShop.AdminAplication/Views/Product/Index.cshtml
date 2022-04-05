@@ -1,0 +1,104 @@
+﻿@using eShop.ViewModels.Catalog.Common
+@model PagedResult<eShop.ViewModels.Catalog.Products.ProductViewModel>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+@section ScriptAlert{
+<script>
+    setTimeout(function(){
+     $('#msgAlert').fadeOut("slow");
+    },2000);
+</script>
+}
+<h1 class="h3 mb-2 text-gray-800">Products Manage</h1>
+@if (ViewBag.SuccessMsg != null)
+{
+    <div id="msgAlert" class="alert alert-success" role="alert">
+        @ViewBag.SuccessMsg
+    </div>
+}
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div style="float:right">
+            <form asp-action="Index" method="get">
+                <div class="row">
+                    <div class="col-md-7">
+                        <input type="text" name="keyword" placeholder="Search" value="@ViewBag.keyword" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-outline-warning">Search</button>
+                @*        <button type="button" onclick="window.location.href='/User/Index'" class="btn btn-outline-dark">Reset</button>*@
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            Tên SP
+                        </th>
+                        <th>
+                            Hình ảnh
+                        </th>
+                        <th>
+                            Giá nhập
+                        </th>
+                        <th>
+                          Số lượng tồn
+                        </th>
+                        <th>
+                            Id
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.OriginalPrice)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Price)
+                            </td>
+                          
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Stock)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Id)
+                            </td>
+                            <td>
+                                @Html.ActionLink("Edit", "Edit","Product", new { item.Id },new { @class= "btn btn-outline-primary"}) |
+                                @Html.ActionLink("Details", "Details","Product", new { item.Id },new { @class= "btn btn-outline-success"}) |
+                                @Html.ActionLink("Delete", "Delete", "Product", new {id = item.Id },new { @class= "btn btn-outline-danger"}) |
+                                @* <form asp-action="Delete" method="post">
+                                    @{
+                                    string id = item.Id.ToString();
+                                    }
+                                    <input type="hidden" asp-for="@id" />
+                                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                                    </form>*@
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @await Component.InvokeAsync("Pager",Model)
+    </div>
+</div>

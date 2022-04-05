@@ -16,7 +16,7 @@ namespace eShop.BackendAPI.Controllers
     {
         private readonly IProductService _imanageProductService;
 
-        public ProductController( IProductService imanageProductService)
+        public ProductController(IProductService imanageProductService)
         {
             _imanageProductService = imanageProductService;
         }
@@ -32,6 +32,14 @@ namespace eShop.BackendAPI.Controllers
         public async Task<IActionResult> GetAllPaging(string langId, [FromQuery] GetPublicProductPagingRequest getPublicProductPagingRequest)
         {
             var product = await _imanageProductService.GetAllByCategoryId(langId, getPublicProductPagingRequest);
+            return Ok(product);
+        }
+
+
+        [HttpGet("Paging")]
+        public async Task<IActionResult> Paging([FromQuery] GetManageProductPagingRequest request)
+        {
+            var product = await _imanageProductService.GetAllPaging(request);
             return Ok(product);
         }
 

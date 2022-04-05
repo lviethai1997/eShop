@@ -115,6 +115,21 @@
                     </div>
                 </div>
             </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true"
+                   aria-controls="collapsePages">
+                    <i class="fas fa-fw fa-folder"></i>
+                    <span>Product Manage</span>
+                </a>
+                <div id="collapsePages" class="collapse show" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Product Manage</h6>
+                        <a class="collapse-item" asp-action="Index" asp-controller="Product">Product List</a>
+                        <a class="collapse-item" asp-action="Create" asp-controller="Product">Create Product</a>
+                    </div>
+                </div>
+            </li>
+
 
             <!-- Nav Item - Charts -->
             <li class="nav-item">
