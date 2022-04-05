@@ -70,7 +70,7 @@ namespace eShop.AdminAplication.Services
             var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri(_configuration["BaseAddress"]);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session);
-            var response = await client.GetAsync($"api/product/Paging?pageIndex={request.PageIndex}&pageSize={request.PageSize}&keyword={request.Keyword}&languageId={request.LanguageId}");
+            var response = await client.GetAsync($"api/product/Paging?pageIndex={request.PageIndex}&pageSize={request.PageSize}&keyword={request.Keyword}&languageId={request.LanguageId}&cateId={request.CategoryId}");
             var body = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<PagedResult<ProductViewModel>>(body);

@@ -1,6 +1,4 @@
 using eShop.AdminAplication.Services;
-using eShop.Application.System.Languages;
-using eShop.Application.System.Roles;
 using eShop.ViewModels.System.Users;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -47,8 +45,7 @@ namespace eShop.AdminAplication
             services.AddTransient<IRoleApiClient, RoleApiClient>();
             services.AddTransient<ILanguageApiClient, LanguageApiClient>();
             services.AddTransient<IProductApiClient, ProductApiClient>();
-
-
+            services.AddTransient<ICategoryApiClient, CategoryApiClient>();
 
             IMvcBuilder builder = services.AddRazorPages();
 

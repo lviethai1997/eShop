@@ -122,7 +122,7 @@ namespace eShop.Application.Catalog.Products
             }
 
             _context.Products.Add(product);
-          var result =  await _context.SaveChangesAsync();
+            var result = await _context.SaveChangesAsync();
             return product.Id;
         }
 
@@ -169,9 +169,9 @@ namespace eShop.Application.Catalog.Products
             if (!string.IsNullOrEmpty(request.Keyword))
                 query = query.Where(x => x.pt.Name.Contains(request.Keyword));
 
-            if (request.CategoryIds != null && request.CategoryIds.Count > 0)
+            if (request.CategoryId != null)
             {
-                query = query.Where(p => request.CategoryIds.Contains(p.pic.CategoryID));
+                query = query.Where(p => p.pic.CategoryID == request.CategoryId);
             }
 
             int totalRow = await query.CountAsync();

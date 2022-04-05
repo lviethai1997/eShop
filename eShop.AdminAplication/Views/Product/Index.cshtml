@@ -22,17 +22,23 @@
     </div>
 }
 <!-- DataTales Example -->
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
+<div class="card shadow mb-8">
+    <div class="card-header py-4">
         <div style="float:right">
             <form asp-action="Index" method="get">
                 <div class="row">
-                    <div class="col-md-7">
+                    <div class="col-md-4">
                         <input type="text" name="keyword" placeholder="Search" value="@ViewBag.keyword" class="form-control" />
                     </div>
+                   
                     <div class="col-md-3">
                         <button type="submit" class="btn btn-outline-warning">Search</button>
                 @*        <button type="button" onclick="window.location.href='/User/Index'" class="btn btn-outline-dark">Reset</button>*@
+                    </div>
+                      <div class="col-md-5">
+                       <select name="cateId" onchange="this.form.submit()" asp-items="@ViewBag.Categories" class="form-control">
+                           <option value="">--Chọn danh mục--</option>
+                       </select>
                     </div>
                 </div>
             </form>

@@ -4,7 +4,9 @@ using eShop.Utilities.Constants;
 using eShop.ViewModels.Catalog.Products;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace eShop.AdminAplication.Controllers
@@ -13,24 +15,35 @@ namespace eShop.AdminAplication.Controllers
     {
         private readonly IProductApiClient _productApiClient;
         private readonly IConfiguration _configuration;
+        private readonly ICategoryApiClient _categoryApiClient;
 
-        public ProductController(IProductApiClient productApiClient,IConfiguration configuration)
+        public ProductController(IProductApiClient productApiClient, IConfiguration configuration, ICategoryApiClient categoryApiClient)
         {
+            _categoryApiClient = categoryApiClient;
             _productApiClient = productApiClient;
             _configuration = configuration;
         }
 
-        public async Task<IActionResult> Index(int pageIndex = 1, int pageSize = 10, string keyword = null)
+        public async Task<IActionResult> Index(int pageIndex = 1, int? cateId = null, int pageSize = 10, string keyword = null)
         {
-            var language = HttpContext.Session.GetString(SystemConstants.AppSettings.DefaultLangId);
+            var languageId = HttpContext.Session.GetString(SystemConstants.AppSettings.DefaultLangId);
 
             var request = new GetManageProductPagingRequest()
             {
                 Keyword = keyword,
                 PageIndex = pageIndex,
                 PageSize = pageSize,
-                LanguageId = language
+                LanguageId = languageId,
+                CategoryId = cateId,
             };
+
+            var category = await _categoryApiClient.GetAll(languageId);
+            ViewBag.Categories = category.Select(x => new SelectListItem()
+            {
+                Text = x.Name,
+                Value = x.Id.ToString(),
+                Selected = cateId.HasValue && cateId.Value.ToString() ==  x.Id.ToString()
+            });
 
             var data = await _productApiClient.GetProductPaging(request);
             ViewBag.keyword = keyword;
@@ -52,7 +65,7 @@ namespace eShop.AdminAplication.Controllers
 
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Create([FromForm]ProductCreateRequest request)
+        public async Task<IActionResult> Create([FromForm] ProductCreateRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -62,7 +75,7 @@ namespace eShop.AdminAplication.Controllers
             var result = await _productApiClient.CreateProduct(request);
             if (result)
             {
-               TempData["result"] = "Success";
+                TempData["result"] = "Success";
                 return RedirectToAction("Index");
             }
 

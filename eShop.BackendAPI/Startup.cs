@@ -1,3 +1,4 @@
+using eShop.Application.Catalog.Categories;
 using eShop.Application.Catalog.Products;
 using eShop.Application.Common;
 using eShop.Application.System.Languages;
@@ -48,6 +49,7 @@ namespace eShop.BackendAPI
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<ILanguageService, LanguageService>();
+            services.AddTransient<ICategoryService, CategoryService>();
 
             services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidation>());
 
