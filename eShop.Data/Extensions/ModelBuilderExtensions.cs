@@ -17,8 +17,8 @@ namespace eShop.Data.Extensions
                new AppConfig() { Key = "HomeDescription", Value = "This is description of eShopSolution" }
                );
             modelBuilder.Entity<Language>().HasData(
-                new Language() { Id = "vi-VN", Name = "Tiếng Việt", IsDefault = true },
-                new Language() { Id = "en-US", Name = "English", IsDefault = false });
+                new Language() { Id = "vi", Name = "Tiếng Việt", IsDefault = true },
+                new Language() { Id = "en", Name = "English", IsDefault = false });
 
             modelBuilder.Entity<Category>().HasData(
                 new Category()
@@ -39,10 +39,10 @@ namespace eShop.Data.Extensions
                  });
 
             modelBuilder.Entity<CategoryTranslation>().HasData(
-                  new CategoryTranslation() { Id = 1, CategoryID = 1, Name = "Áo nam", LanguageID = "vi-VN", SeoAlias = "ao-nam", SeoDescription = "Sản phẩm áo thời trang nam", SeoTitle = "Sản phẩm áo thời trang nam" },
-                  new CategoryTranslation() { Id = 2, CategoryID = 1, Name = "Men Shirt", LanguageID = "en-US", SeoAlias = "men-shirt", SeoDescription = "The shirt products for men", SeoTitle = "The shirt products for men" },
-                  new CategoryTranslation() { Id = 3, CategoryID = 2, Name = "Áo nữ", LanguageID = "vi-VN", SeoAlias = "ao-nu", SeoDescription = "Sản phẩm áo thời trang nữ", SeoTitle = "Sản phẩm áo thời trang women" },
-                  new CategoryTranslation() { Id = 4, CategoryID = 2, Name = "Women Shirt", LanguageID = "en-US", SeoAlias = "women-shirt", SeoDescription = "The shirt products for women", SeoTitle = "The shirt products for women" }
+                  new CategoryTranslation() { Id = 1, CategoryID = 1, Name = "Áo nam", LanguageID = "vi", SeoAlias = "ao-nam", SeoDescription = "Sản phẩm áo thời trang nam", SeoTitle = "Sản phẩm áo thời trang nam" },
+                  new CategoryTranslation() { Id = 2, CategoryID = 1, Name = "Men Shirt", LanguageID = "en", SeoAlias = "men-shirt", SeoDescription = "The shirt products for men", SeoTitle = "The shirt products for men" },
+                  new CategoryTranslation() { Id = 3, CategoryID = 2, Name = "Áo nữ", LanguageID = "vi", SeoAlias = "ao-nu", SeoDescription = "Sản phẩm áo thời trang nữ", SeoTitle = "Sản phẩm áo thời trang women" },
+                  new CategoryTranslation() { Id = 4, CategoryID = 2, Name = "Women Shirt", LanguageID = "en", SeoAlias = "women-shirt", SeoDescription = "The shirt products for women", SeoTitle = "The shirt products for women" }
                     );
 
             modelBuilder.Entity<Product>().HasData(
@@ -61,7 +61,7 @@ namespace eShop.Data.Extensions
                      Id = 1,
                      ProductID = 1,
                      Name = "Áo sơ mi nam trắng Việt Tiến",
-                     LanguageID = "vi-VN",
+                     LanguageID = "vi",
                      SeoAlias = "ao-so-mi-nam-trang-viet-tien",
                      SeoDescription = "Áo sơ mi nam trắng Việt Tiến",
                      SeoTitle = "Áo sơ mi nam trắng Việt Tiến",
@@ -73,7 +73,7 @@ namespace eShop.Data.Extensions
                         Id = 2,
                         ProductID = 1,
                         Name = "Viet Tien Men T-Shirt",
-                        LanguageID = "en-US",
+                        LanguageID = "en",
                         SeoAlias = "viet-tien-men-t-shirt",
                         SeoDescription = "Viet Tien Men T-Shirt",
                         SeoTitle = "Viet Tien Men T-Shirt",
